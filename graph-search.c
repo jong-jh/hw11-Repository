@@ -83,8 +83,8 @@ int main()
 
         case 'e': case 'E':
             printf("Your Key (v1) = ");
-            scanf("%d",&v2);
-            printf("Your Key (v1) = ");
+            scanf("%d",&v1);
+            printf("Your Key (v2) = ");
             scanf("%d",&v2);
 			InsertEdge(head,v1,v2);
 			break;
@@ -108,7 +108,7 @@ int main()
 
 	}while(command != 'q' && command != 'Q');
 
-	return 1;
+	return 0;
 }
 
 int initializeGraph(Graph** h){
@@ -118,7 +118,7 @@ int initializeGraph(Graph** h){
     *h=(Graph*)malloc(sizeof(Graph)*10);
     for(int i=0;i<10;i++){
         (*h+i)->link=NULL;
-        (*h+i)->vertex=i;
+        (*h+i)->vertex=-1;	//각 헤더노드의 vertex를 -1으로 초기화
     }
 
     top=-1;
@@ -148,15 +148,48 @@ int freeGraph(Graph* h){
 }
 
 int InsertVertex(Graph* h,int v1){
+   (h+v1)->vertex = v1;
 
+   return 1;
 }
 
 int InsertEdge(Graph* h,int v1, int v2){
+	Graph* temp1 =(Graph*)malloc(sizeof(Graph));		//새로운 값이 들어갈 공간 생성
+	Graph* temp2 =(Graph*)malloc(sizeof(Graph));		//새로운 값이 들어갈 공간 생성
+	Graph* p=(h+v1);	//헤드노드의 해당되는 인덱스와 연결.
 
+	temp1->vertex=v1;
+	temp1->link=NULL;
+	temp2->vertex=v2;
+	temp2->link=NULL;
+
+	while(1){
+		if(p->vertex==v2){// 이미 연결되어있다면
+			printf("\n Edge already exist \n");
+			return 0;
+		}
+
+		if(!p->link){
+			p->link=temp2;	//v1 이 v2 를 가리킴
+			break;
+		}
+
+		else p=p->link;		// 다음 노드가 존재한다면 이동
+	}
+	
+	p=(h+v2);
+	while(1){
+		if(!p->link){ 
+			p->link=temp1;	//v2 가 v1을 가리킴
+			break;
+		}
+		else p=p->link;
+	}
+
+	return 0;
 }
 
 void DFS(Graph* h){
-
 }
 
 void BFS(Graph* h){
@@ -164,7 +197,22 @@ void BFS(Graph* h){
 }
 
 void PrintGraph(Graph* h){
+	Graph* p=h;
 
+	for(int i=0;i<10;i++){
+		p=h+i;
+		for(int j=0;j<10;j++){
+			if(p->vertex!=-1){
+				printf(" [%d] ",(p->vertex));
+			}
+			if(p->link){
+				p=p->link;
+			}
+			else
+				break;
+		}
+		printf("\n");
+	}
 }
 
 Graph* pop()	//stack pop
