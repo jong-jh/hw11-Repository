@@ -40,8 +40,8 @@ int initializeGraph(Graph** h);
 int freeGraph(Graph* h);
 int InsertVertex(Graph* h,int);
 int InsertEdge(Graph* h,int, int);
-void DFS(Graph* h);
-void BFS(Graph* h);
+void DFS(Graph* h, int);
+void BFS(Graph* h, int);
 void PrintGraph(Graph* h);
 void freeVertex(Graph *ptr);
 
@@ -90,11 +90,15 @@ int main()
 			break;
 
         case 'd': case 'D':
-			DFS(head);
+			printf("Your Key = ");
+            scanf("%d",&v1);
+			DFS(head, v1);
 			break;
 
         case 'b': case 'B':
-			BFS(head);
+			printf("Your Key = ");
+            scanf("%d",&v1);
+			BFS(head, v1);
 			break;
 
         case 'p': case 'P':
@@ -169,8 +173,14 @@ int InsertEdge(Graph* h,int v1, int v2){
 			return 0;
 		}
 
-		if(!p->link){
+		if(!p->link){	//가리키는 노드가 없다면 연결
 			p->link=temp2;	//v1 이 v2 를 가리킴
+			break;
+		}
+
+		if(p->link->vertex > v2){	//인접리스트를 vertex 크기 순으로 정렬
+			temp2->link=p->link;
+			p->link=temp2;
 			break;
 		}
 
@@ -183,16 +193,54 @@ int InsertEdge(Graph* h,int v1, int v2){
 			p->link=temp1;	//v2 가 v1을 가리킴
 			break;
 		}
+		if(p->link->vertex > v1){ //인접리스트를 vertex 크기 순으로 정렬
+			temp1->link=p->link;
+			p->link=temp1;
+			break;
+		}
 		else p=p->link;
 	}
 
 	return 0;
 }
 
-void DFS(Graph* h){
+/*Depth First Search (iteratvie)*/
+
+void DFS(Graph* h,int v){
+	Graph* p = h+v;	//그래프를 가리키는 포인터
+	Graph* ptr = NULL;	//stack 의 pop을 받을 ptr
+
+	int visited[10]; for(int i=0;i<10;i++){visited[i]=0;}	//visit flag  0으로 초기화
+	top = -1;	//stack top 초기화
+
+	//visited[v]=1;	//방문 노드 1 표시
+	//push(h+v);
+
+	while(1){
+		
+		v=p->vertex;
+
+		if(visited[v]==0){
+			printf("  [%d]  ",v);
+			visited[v]=1;
+			push(h+v);
+			p=h+v;
+		}
+		else {
+			if(p->link==NULL){
+				ptr=pop();
+				//printf(" [%d] ", ptr->vertex);
+				p=h+(p->vertex);
+			}
+			p=p->link;
+		}
+
+		if(top==-1)	break;
+	}
+
 }
 
-void BFS(Graph* h){
+void BFS(Graph* h, int v){
 
 }
 
