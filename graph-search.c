@@ -58,7 +58,7 @@ int main()
 		printf("                         Graph search                           \n");
 		printf("----------------------------------------------------------------\n");
 		printf(" Initialize Graph       = z                                     \n");
-		printf(" Insert Vertex          = v      Insert Edge               = e \n");
+		printf(" Insert Vertex          = v      Insert Edge                = e \n");
 		printf(" Depth First Search     = d      Breath First Search        = b \n");
 		printf(" Print Graph            = p      Quit                       = q \n");
 		printf("----------------------------------------------------------------\n");
@@ -158,6 +158,12 @@ int InsertVertex(Graph* h,int v1){
 }
 
 int InsertEdge(Graph* h,int v1, int v2){
+	if((h+v1)->vertex==-1||(h+v2)->vertex==-1){
+		printf("\n key is not in graph \n");
+		return 0;
+	}
+
+
 	Graph* temp1 =(Graph*)malloc(sizeof(Graph));		//새로운 값이 들어갈 공간 생성
 	Graph* temp2 =(Graph*)malloc(sizeof(Graph));		//새로운 값이 들어갈 공간 생성
 	Graph* p=(h+v1);	//헤드노드의 해당되는 인덱스와 연결.
@@ -207,6 +213,10 @@ int InsertEdge(Graph* h,int v1, int v2){
 /*Depth First Search (iteratvie)*/
 
 void DFS(Graph* h,int v){
+	if((h+v)->vertex==-1){
+		printf("\n key is not in graph \n");
+		return ;
+	}
 	Graph* p = h+v;	//그래프를 가리키는 포인터
 	Graph* ptr = NULL;	//stack 의 pop을 받을 ptr
 
@@ -218,30 +228,55 @@ void DFS(Graph* h,int v){
 
 	while(1){
 		
-		v=p->vertex;
+		v=p->vertex;	//헤더노드의 vertex를 받는다.
 
-		if(visited[v]==0){
-			printf("  [%d]  ",v);
-			visited[v]=1;
-			push(h+v);
-			p=h+v;
+		if(!visited[v]){	//해당 vertex에 방문하지 않았다면
+			printf("  [%d]  ",v);	//값을 출력
+			visited[v]=1;			//방문 flag
+			push(h+v);				//stack 에 push
+			p=h+v;					//해당 값을 가진 헤더노드로 이동
 		}
-		else {
-			if(p->link==NULL){
-				ptr=pop();
+		else {			//해당 vertex에 방문을 했다면
+			if(p->link==NULL){	//다음 노드가 존재하지 않는다면
+				ptr=pop();		//stack 을 pop 해준다.
 				//printf(" [%d] ", ptr->vertex);
-				p=h+(p->vertex);
+				p=h+(p->vertex);	//헤더노드 이동
 			}
-			p=p->link;
+			p=p->link;	//노드 이동
 		}
 
-		if(top==-1)	break;
+		if(top==-1)	break;	//stack이 비워지면 반복문 탈출
 	}
 
 }
 
 void BFS(Graph* h, int v){
+	Graph* p=h+v;		//그래프를 가리킬 포인터
+	
+	if((h+v)->vertex==-1){
+		printf("\n key is not in graph \n");
+		return ;
+	}
 
+	int visited[10]; for(int i=0;i<10;i++){visited[i]=0;}	//visit flag  0으로 초기화
+	rear=front=-1;
+
+	printf("  [%d]  ",v);
+	visited[v]=1;
+	enQueue(p);
+
+	while(1){
+		p=deQueue();
+		for(p;p;p=p->link){
+			v=p->vertex;
+			if(!visited[v]){
+				printf("  [%d]  ",p->vertex);
+				enQueue(h+v);
+				visited[v]=1;
+			}
+		}
+		if(rear==front) break;
+	}
 }
 
 void PrintGraph(Graph* h){
