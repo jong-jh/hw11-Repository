@@ -149,8 +149,8 @@ int freeGraph(Graph* h){
     return 0;
 }
 
-int InsertVertex(Graph* h,int v1){	//헤더노드 vertax 값을 해당 vertax 값으로 초기화
-   if((h+v1)->vertex==v1){	//해당 vertax가 이미 존재한다면 다음을 출력 후 종료
+int InsertVertex(Graph* h,int v1){	//헤더노드 vertex 값을 해당 vertex 값으로 초기화
+   if((h+v1)->vertex==v1){	//해당 vertex가 이미 존재한다면 다음을 출력 후 종료
 	   printf("\n key is already in graph\n");
 	   return 0;
    }
@@ -160,7 +160,7 @@ int InsertVertex(Graph* h,int v1){	//헤더노드 vertax 값을 해당 vertax 값으로 초�
 }
 
 int InsertEdge(Graph* h,int v1, int v2){
-	if((h+v1)->vertex==-1||(h+v2)->vertex==-1){	//edge가 이미 존재한다면 다음을 출력
+	if((h+v1)->vertex==-1||(h+v2)->vertex==-1){	//해당 vertex가 존재하지 않는다면 다음을 출력
 		printf("\n key is not in graph \n");
 		return 0;
 	}
@@ -175,8 +175,7 @@ int InsertEdge(Graph* h,int v1, int v2){
 	temp2->vertex=v2;
 	temp2->link=NULL;
 /*p 는 v1 vertax에 해당하는 헤더노드에 위치하고 있다. v1 헤더노드에 v2 vertex를 연결해야한다.
-이미 v2 vertex값이 v1헤더에 연결되어 있는 경우, 헤더노드를 이동하는데, 더 큰 vertax가 이미 연결되어있다면 v2를 그 이전에 연결
-p가 link를 타고 이동 중 다음 노드가 없다면 v2를 연결
+이미 v2 vertex값이 v1헤더에 연결되어 있는 경우, 함수를 종료한다. p가 link를 타고 이동 중 더 큰 vertax가 이미 연결되어있다면 v2를 그 이전에 연결, 다음 노드가 없다면 v2를 연결
 */
 	while(1){
 		if(p->vertex==v2){// 이미 연결되어있다면
