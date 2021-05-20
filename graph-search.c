@@ -15,11 +15,11 @@
 /* for graph */
 typedef struct graph {
 	int vertex;
-	struct graph *link;
+	struct graph *link;	//인접리스트를 연결할 link
 } Graph;
 
 /* for stack */
-#define MAX_STACK_SIZE		20
+#define MAX_STACK_SIZE		10	//max vertex size = 10
 Graph* stack[MAX_STACK_SIZE];
 int top = -1;
 
@@ -27,7 +27,7 @@ Graph* pop();
 void push(Graph* aNode);
 
 /* for queue */
-#define MAX_QUEUE_SIZE		20
+#define MAX_QUEUE_SIZE		10 //max vertex size = 10
 Graph* queue[MAX_QUEUE_SIZE];
 int front = -1;
 int rear = -1;
@@ -115,24 +115,23 @@ int main()
 	return 0;
 }
 
-int initializeGraph(Graph** h){
-    if(*h!=NULL)
+int initializeGraph(Graph** h){	
+    if(*h!=NULL)	//빈 그래프가 아니라면 메모리 해제
         freeGraph(*h);
 
-    *h=(Graph*)malloc(sizeof(Graph)*10);
+    *h=(Graph*)malloc(sizeof(Graph)*10);	//10개의 헤더노드를 나타낼 배열 생성
     for(int i=0;i<10;i++){
         (*h+i)->link=NULL;
         (*h+i)->vertex=-1;	//각 헤더노드의 vertex를 -1으로 초기화
     }
 
     top=-1;
-
     front = rear = -1;
 
     return 1;
 }
 
-void freeVertex(Graph *ptr){
+void freeVertex(Graph *ptr){	//link를 이동하면서 메모리 해제
     if(ptr){
         freeVertex(ptr->link);
         free(ptr);
@@ -141,24 +140,27 @@ void freeVertex(Graph *ptr){
 
 int freeGraph(Graph* h){
     for(int i=0;i<10;i++){
-
-        if((h+i)->link){
+        if((h+i)->link){	//헤더노드에 link가 존재한다면 연결된 모든 메모리 해제
            freeVertex((h+i)->link);
         }
     }
 
-    free(h);
+    free(h);	//헤더노드 동적할당 배열 메모리 해제
     return 0;
 }
 
-int InsertVertex(Graph* h,int v1){
+int InsertVertex(Graph* h,int v1){	//헤더노드 vertax 값을 해당 vertax 값으로 초기화
+   if((h+v1)->vertex==v1){	//해당 vertax가 이미 존재한다면 다음을 출력 후 종료
+	   printf("\n key is already in graph\n");
+	   return 0;
+   }
    (h+v1)->vertex = v1;
 
    return 1;
 }
 
 int InsertEdge(Graph* h,int v1, int v2){
-	if((h+v1)->vertex==-1||(h+v2)->vertex==-1){
+	if((h+v1)->vertex==-1||(h+v2)->vertex==-1){	//edge가 이미 존재한다면 다음을 출력
 		printf("\n key is not in graph \n");
 		return 0;
 	}
@@ -172,7 +174,10 @@ int InsertEdge(Graph* h,int v1, int v2){
 	temp1->link=NULL;
 	temp2->vertex=v2;
 	temp2->link=NULL;
-
+/*p 는 v1 vertax에 해당하는 헤더노드에 위치하고 있다. v1 헤더노드에 v2 vertex를 연결해야한다.
+이미 v2 vertex값이 v1헤더에 연결되어 있는 경우, 헤더노드를 이동하는데, 더 큰 vertax가 이미 연결되어있다면 v2를 그 이전에 연결
+p가 link를 타고 이동 중 다음 노드가 없다면 v2를 연결
+*/
 	while(1){
 		if(p->vertex==v2){// 이미 연결되어있다면
 			printf("\n Edge already exist \n");
@@ -192,7 +197,9 @@ int InsertEdge(Graph* h,int v1, int v2){
 
 		else p=p->link;		// 다음 노드가 존재한다면 이동
 	}
-	
+/*p 는 v2 vertex에 해당하는 헤더노드에 위치. v2 헤더노드에 v1 vertex를 연결한다.
+인접리스트 vertex 를 크기 순으로 정렬해야 BFS, DFS 가 가능하기 때문에 크기순으로 vertex를 연결해준다.
+*/
 	p=(h+v2);
 	while(1){
 		if(!p->link){ 
@@ -210,7 +217,12 @@ int InsertEdge(Graph* h,int v1, int v2){
 	return 0;
 }
 
-/*Depth First Search (iteratvie)*/
+/*Depth First Search (iteratvie)
+오름차순으로 정렬된 인접리스트를 이용해 DFS 를 한다. 기준이 되는 v를 사용자에게서 입력받는다.
+visited[10] 배열을 이용해 visit flag 를 표시해준다. 방문한 적이 없는 vertex에 방문하게 되면 출력을 한 뒤, stack에 push를 해준다.
+더이상 이동할 link가 없는 경우, pop()을 해준 뒤, 해당 위치의 vertex를 가진 헤더노드로 이동한다.
+stack 에 값이 없어질 때 까지 (top==-1) 다음을 반복한다.
+*/
 
 void DFS(Graph* h,int v){
 	if((h+v)->vertex==-1){
@@ -249,7 +261,11 @@ void DFS(Graph* h,int v){
 	}
 
 }
-
+/*Breath First Search
+DSF와 동일하게 오름차순으로 정렬된 인접리스트와 visited[10] flag 를 사용하여, 미방문 vertex 일 경우 출력 후 enqueue, 
+해당 vertex의 헤더노드를 이동하면서 위의 내용을 반복해준다. 만약 더이상 이동할 link가 없다면 p=dequeue를 통해
+새로운 헤더노드에 접근 후 위의 내용을 반복한다. Queue 가 비워지면 BFS를 종료한다. 
+*/
 void BFS(Graph* h, int v){
 	Graph* p=h+v;		//그래프를 가리킬 포인터
 	
@@ -278,14 +294,14 @@ void BFS(Graph* h, int v){
 		if(rear==front) break;
 	}
 }
-
+/*Graph 를 출력해주는 함수. Graph 출력의 예시가 따로 없어, 인접리스트를 직관적으로 파악할 수 있게 함수를 구현하였다.*/
 void PrintGraph(Graph* h){
 	Graph* p=h;
 
 	for(int i=0;i<10;i++){
 		p=h+i;
-		for(int j=0;j<10;j++){
-			if(p->vertex!=-1){
+		for(int j=0;j<10;j++){	//link를 통해 이동하면서 존재하는 vertex를 출력, link가 없다면 다음 헤더노드로 이동
+			if(p->vertex!=-1){	//p->vertex가 -1 이라면 헤더노드에 vertex가 insert 되지 않은 상태이므로 출력하지 않는다.
 				printf(" [%d] ",(p->vertex));
 			}
 			if(p->link){
