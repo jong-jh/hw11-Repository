@@ -51,7 +51,7 @@ int main()
 	char command;
 	int v1,v2;
     Graph* head=NULL;
-
+	printf("----2018038051   Á¤Á¾Çö ----");
 	do{
 		printf("\n\n");
 		printf("----------------------------------------------------------------\n");
